@@ -8,6 +8,7 @@ contract BonusPoints {
     event AnnualClearing(string message);
     address public owner;
     mapping(address => uint) public balances;
+    mapping(address => uint) public spended_points;
     mapping(address => mapping(address => uint256)) private _allowances;
     mapping(address => bool) private _is_user;
     address[] private _users;
@@ -59,5 +60,13 @@ contract BonusPoints {
             balances[_users[i]] = 0;
         }
         emit AnnualClearing("All scores were burn");
+    }
+
+    function getMyBonusPoints() external view virtual returns(uint) {
+        return balances[msg.sender];
+    }
+
+    function getMySpendedPoints() external view virtual returns(uint) {
+        return spended_points[msg.sender];
     }
 }
