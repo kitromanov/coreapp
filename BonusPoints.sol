@@ -69,4 +69,8 @@ contract BonusPoints {
     function getMySpendedPoints() external view virtual returns(uint) {
         return spended_points[msg.sender];
     }
+
+    function getOwner() external view returns(address) {
+        return owner;
+    }
 }
