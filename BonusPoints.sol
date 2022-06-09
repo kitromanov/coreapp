@@ -22,7 +22,7 @@ contract BonusPoints {
         _;
     }
 
-    function mint(address user, uint amount) external onlyOwner {
+    function mint(address user, uint amount) public virtual onlyOwner {
         if (_is_user[user] == false) {
             _is_user[user] = true;
             _users.push(user);
@@ -31,7 +31,7 @@ contract BonusPoints {
         emit Mint(user, balances[user]);
     }
 
-    function burn(address user, uint amount) external onlyOwner {
+    function burn(address user, uint amount) public onlyOwner {
         balances[user] -= amount;
         emit Burn(user, balances[user]);
     }
@@ -72,5 +72,26 @@ contract BonusPoints {
 
     function getOwner() external view returns(address) {
         return owner;
+    }
+}
+
+contract Points_allocator is BonusPoints {
+    event SetStatus(address, Status);
+    enum Status{ ORDINARY, VIP, PREMIUM}
+    mapping(address => Status) user_status;
+
+    function setStatus(address user, Status status) public onlyOwner {
+        emit SetStatus(user, status);
+        user_status[user] = status;
+    }
+
+    function mint(address user, uint amount) public override onlyOwner {
+        uint k = 1;
+        if (user_status[user] == Status.VIP) {
+            k = 5;
+        } else if(user_status[user] == Status.PREMIUM) {
+            k = 2;
+        }
+        super.mint(user, k * amount);
     }
 }
